@@ -2,6 +2,8 @@
 
 import readline from 'readline';
 import conductResearch from './index.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Create readline interface for better CLI experience
 const rl = readline.createInterface({

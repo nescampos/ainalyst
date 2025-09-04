@@ -7,9 +7,6 @@ export const config = {
     baseUrl: process.env.OPENAI_BASE_URL,
     model: process.env.OPENAI_MODEL || 'gpt-oss-20b'
   },
-  serpapi: {
-    apiKey: process.env.SERPAPI_API_KEY,
-  },
   tavily: {
     apiKey: process.env.TAVILY_API_KEY,
   },

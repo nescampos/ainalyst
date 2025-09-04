@@ -1,7 +1,7 @@
 {
-  "name": "gpt-oss-researcher",
+  "name": "ainalyst",
   "version": "1.0.0",
-  "description": "An AI research assistant using gpt-oss models",
+  "description": "An AI-powered research and analysis assistant that transforms complex queries into comprehensive reports and presentations",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -12,11 +12,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "gpt",
-    "research",
     "ai",
+    "research",
+    "analysis",
+    "assistant",
+    "gpt",
     "openai",
-    "gpt-oss"
+    "markdown",
+    "powerpoint",
+    "presentation"
   ],
   "author": "Nestor Campos",
   "license": "MIT",

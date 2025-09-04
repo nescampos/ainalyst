@@ -3,9 +3,11 @@
 import ResearchSkill from './skills/ResearchSkill.js';
 import ReportGenerator from './skills/ReportGenerator.js';
 import PresentationGenerator from './skills/PresentationGenerator.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 async function conductResearch(query, options = {}) {
-  console.log('GPT-OSS Researcher');
+  console.log('AInalyst - AI Research Assistant');
   console.log('==================================\n');
   
   if (!query || query.trim().length === 0) {

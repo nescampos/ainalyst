@@ -258,5 +258,5 @@ async function processResearch(jobId, query) {
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`GPT Researcher Web Server running on http://localhost:${PORT}`);
+  console.log(`AInalyst Web Server running on http://localhost:${PORT}`);
 });
