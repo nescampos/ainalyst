@@ -4,8 +4,8 @@ dotenv.config();
 export const config = {
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
-    baseUrl: process.env.OPENAI_BASE_URL,
-    model: process.env.OPENAI_MODEL || 'gpt-oss-20b'
+    baseUrl: process.env.OPENAI_BASE_URL || "https://router.huggingface.co/v1",
+    model: process.env.OPENAI_MODEL || 'openai/gpt-oss-20b'
   },
   tavily: {
     apiKey: process.env.TAVILY_API_KEY,

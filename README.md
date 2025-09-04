@@ -39,8 +39,8 @@ AInalyst is an advanced AI-powered research and analysis assistant that transfor
 
 - Node.js (v14 or higher)
 - An API key (for gpt-oss models).
-- An OpenAI compatible Base URL (for gpt-oss models).
-- An OpenAI Model name (the default name is **gpt-oss-20b**).
+- An OpenAI compatible Base URL (for gpt-oss models, by default is **https://router.huggingface.co/v1**).
+- An OpenAI Model name (the default name is **openai/gpt-oss-20b**).
 - Internet connection for web searches
 
 ## 📦 Installation
@@ -180,8 +180,8 @@ The web interface provides a modern, ChatGPT-like experience with the following 
 ### Environment Variables
 
 - `OPENAI_API_KEY`: Your OpenAI API compatible key (required)
-- `OPENAI_BASE_URL`: Your OpenAI API compatible base URL (required)
-- `OPENAI_MODEL`: Your OpenAI API compatible model name (required or default: gpt-oss-20b)
+- `OPENAI_BASE_URL`: Your OpenAI API compatible base URL (required, by default is **https://router.huggingface.co/v1**)
+- `OPENAI_MODEL`: Your OpenAI API compatible model name (required or default: **openai/gpt-oss-20b**)
 - `MAX_TOKENS`: Max tokens (optional or default: 5000)
 - `MAX_RESULTS`: Max results for web search (optional or default: 5)
 - `TAVILY_API_KEY`: Your Tavily API key (optional, but recommended)
