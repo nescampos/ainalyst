@@ -69,7 +69,7 @@ class PresentationGenerator {
       color: '000000'
     });
     
-    titleSlide.addText('Informe de Investigación', {
+    titleSlide.addText('Research Report', {
       x: 0.5,
       y: 3,
       w: 9,

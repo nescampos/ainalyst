@@ -1,50 +1,46 @@
-import { getJson } from 'serpapi';
+import Exa from 'exa-js';
 import * as cheerio from 'cheerio';
 import { config } from '../utils/config.js';
+import BaseRetriever from './BaseRetriever.js';
 
-class SerpApiRetriever {
+class ExaRetriever extends BaseRetriever {
   constructor(apiKey) {
-    this.apiKey = apiKey || config.serpapi.apiKey || process.env.SERPAPI_API_KEY;
+    super(apiKey || config.exa?.apiKey || process.env.EXA_API_KEY);
     this.maxResults = config.maxResults || 5;
+    
+    if (this.apiKey) {
+      this.client = new Exa(this.apiKey);
+    }
   }
 
   async search(query) {
     if (!this.apiKey) {
-      console.error('SerpApiRetriever: SERPAPI_API_KEY not found in environment variables');
+      console.error('ExaRetriever: EXA_API_KEY not found in environment variables');
       return this.fallbackSearch(query);
     }
 
     try {
-      console.log(`SerpApiRetriever: Searching for "${query}"`);
-      console.log(`SerpApiRetriever: Using API Key: ${this.apiKey.substring(0, 5)}...`);
+      console.log(`ExaRetriever: Searching for "${query}"`);
       
-      const params = {
-        engine: "google",
-        api_key: this.apiKey,
-        q: query,
-        //num: this.maxResults,
-      };
-      
-      console.log('SerpApiRetriever: Params being sent:', JSON.stringify(params, null, 2));
-      
-      const response = await getJson(params);
-      
-      console.log('SerpApiRetriever: Raw response:', JSON.stringify(response, null, 2));
+      const response = await this.client.searchAndContents(query, {
+        type: 'neural',
+        useAutoprompt: true,
+        numResults: this.maxResults
+      });
 
-      const results = response.organic_results || [];
-      
       // Process results to match our expected format
+      const results = response.results || [];
+      
       const formattedResults = results.map(result => ({
-        url: result.link || '',
+        url: result.url || '',
         title: result.title || 'Untitled',
-        content: result.snippet || ''
+        content: result.text || result.snippet || ''
       }));
 
-      console.log(`SerpApiRetriever: Found ${formattedResults.length} results`);
+      console.log(`ExaRetriever: Found ${formattedResults.length} results`);
       return formattedResults;
     } catch (error) {
-      console.error('SerpApiRetriever: Error in search:');
-      console.error("error", error);
+      console.error('ExaRetriever: Error in search:');
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
@@ -57,14 +53,7 @@ class SerpApiRetriever {
   }
 
   async fallbackSearch(query) {
-    console.log(`SerpApiRetriever: Using fallback search for "${query}"`);
-    
-    // Return a mock result for now
-    return [{
-      url: 'https://example.com',
-      title: `Search results for: ${query}`,
-      content: `This is a placeholder result for the query: "${query}". In a full implementation with SerpApi, this would contain actual search results from Google.`
-    }];
+    return super.fallbackSearch(query);
   }
 
   async scrapeContent(url) {
@@ -93,10 +82,10 @@ class SerpApiRetriever {
       // Clean up the text
       return content.replace(/\s+/g, ' ').trim().substring(0, 2000);
     } catch (error) {
-      console.error(`SerpApiRetriever: Error scraping ${url}:`, error.message);
+      console.error(`ExaRetriever: Error scraping ${url}:`, error.message);
       return '';
     }
   }
 }
 
-export default SerpApiRetriever;
+export default ExaRetriever;

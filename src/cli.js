@@ -16,7 +16,7 @@ console.log('==================================\n');
 const args = process.argv.slice(2);
 if (args.length > 0) {
   // Check if --retriever flag is provided
-  let retriever = 'web';
+  let retriever = process.env.RETRIEVER || 'tavily';
   let queryArgs = args;
   
   const retrieverIndex = args.indexOf('--retriever');
@@ -34,7 +34,6 @@ if (args.length > 0) {
     console.log('Please provide a research query.');
     rl.close();
     process.exit(1);
-    return;
   }
   
   try {
@@ -47,16 +46,15 @@ if (args.length > 0) {
   }
 } else {
   // Otherwise, prompt user for input
-  console.log('Available retrievers: web, serpapi');
-  rl.question('Select retriever (default: web): ', (retrieverInput) => {
-    const retriever = retrieverInput && retrieverInput.trim() !== '' ? retrieverInput.trim() : 'web';
+  console.log('Available retrievers: tavily, exa');
+  rl.question('Select retriever (default: tavily): ', (retrieverInput) => {
+    const retriever = retrieverInput && retrieverInput.trim() !== '' ? retrieverInput.trim() : 'tavily';
     
     rl.question('Enter your research query: ', async (query) => {
       if (!query || query.trim().length === 0) {
         console.log('Please provide a research query.');
         rl.close();
         process.exit(1);
-        return;
       }
       
       try {

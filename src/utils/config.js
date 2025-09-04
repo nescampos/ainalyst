@@ -13,7 +13,9 @@ export const config = {
   tavily: {
     apiKey: process.env.TAVILY_API_KEY,
   },
-  maxResults: 5,
-  maxSubtopics: 3,
-  maxTokens: 5000,
+  exa: {
+    apiKey: process.env.EXA_API_KEY,
+  },
+  maxResults: process.env.MAX_RESULTS || 5,
+  maxTokens: process.env.MAX_TOKENS || 5000,
 };

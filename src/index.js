@@ -12,7 +12,7 @@ async function conductResearch(query, options = {}) {
     throw new Error('Research query is required');
   }
   
-  const retrieverType = options.retriever || 'tavily';
+  const retrieverType = options.retriever || process.env.RETRIEVER || 'tavily';
   console.log(`Research query: ${query} (using ${retrieverType} retriever)\n`);
   
   try {
@@ -66,7 +66,7 @@ async function conductResearch(query, options = {}) {
 const args = process.argv.slice(2);
 if (args.length > 0) {
   // Check if --retriever flag is provided
-  let retriever = 'tavily';
+  let retriever = process.env.RETRIEVER || 'tavily';
   let queryArgs = args;
   
   const retrieverIndex = args.indexOf('--retriever');

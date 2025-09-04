@@ -1,7 +1,7 @@
 {
-  "name": "gpt-researcher-node",
+  "name": "gpt-oss-node",
   "version": "1.0.0",
-  "description": "A simplified Node.js implementation of GPT Researcher",
+  "description": "An AI research assistant using gpt-oss models",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -14,19 +14,20 @@
     "gpt",
     "research",
     "ai",
-    "openai"
+    "openai",
+    "gpt-oss"
   ],
-  "author": "",
+  "author": "Nestor Campos",
   "license": "MIT",
   "dependencies": {
     "@tavily/core": "^0.5.11",
     "axios": "^1.6.0",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
+    "exa-js": "^1.0.0",
     "markdown-it": "^14.1.0",
     "openai": "^4.20.0",
-    "pptxgenjs": "^4.0.1",
-    "serpapi": "^2.2.1"
+    "pptxgenjs": "^4.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

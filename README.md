@@ -9,15 +9,7 @@ A simplified Node.js implementation of the GPT Researcher, a tool that conducts 
 - Uses OpenAI GPT models for intelligent research
 - CLI interface for easy interaction
 - Saves reports to markdown files
-- Supports multiple search providers (SerpApi, Tavily)
-
-## Features
-
-- Conducts research on any given topic
-- Generates comprehensive reports with citations
-- Uses OpenAI GPT models for intelligent research
-- CLI interface for easy interaction
-- Saves reports to markdown files
+- Supports multiple search providers (Tavily, Exa)
 
 ## Prerequisites
 
@@ -42,10 +34,10 @@ A simplified Node.js implementation of the GPT Researcher, a tool that conducts 
    - Add your API keys to the `.env` file:
      ```env
      OPENAI_API_KEY=sk-your-openai-api-key-here
-     # For SerpApi (optional)
-     SERPAPI_API_KEY=your-serpapi-key-here
      # For Tavily (optional)
      TAVILY_API_KEY=tvly-your-tavily-api-key-here
+     # For Exa (optional)
+     EXA_API_KEY=your-exa-api-key-here
      ```
 
 ## Usage
@@ -81,6 +73,26 @@ npm start "What are the benefits of renewable energy?"
 npm start "Explain quantum computing in simple terms"
 ```
 
+### Selecting a Retriever
+
+You can select which retriever to use in several ways:
+
+1. Set the RETRIEVER environment variable in your `.env` file:
+   ```env
+   RETRIEVER=exa
+   ```
+
+2. Use the --retriever flag when running the application:
+   ```bash
+   npm start -- --retriever exa "Your research query here"
+   ```
+
+3. When using the CLI mode, you'll be prompted to select a retriever.
+
+Available retrievers:
+- `tavily` (default)
+- `exa`
+
 ## How It Works
 
 1. **Research Planning**: The system analyzes your query and breaks it down into sub-questions
@@ -95,18 +107,27 @@ src/
 ├── index.js          # Main entry point
 ├── cli.js            # CLI interface
 ├── retrievers/       # Web search functionality
-│   ├── SerpApiRetriever.js  # SerpApi search provider
+│   ├── BaseRetriever.js     # Base retriever class
 │   ├── TavilyRetriever.js   # Tavily search provider
-│   └── WebSearchRetriever.js # Base web search functionality
+│   └── ExaRetriever.js      # Exa search provider
 ├── skills/           # Research and report generation skills
 └── utils/            # Utility functions and configuration
 ```
+
+## Extending with New Retrievers
+
+The application is designed to be easily extensible with new retrievers:
+
+1. Create a new class that extends `BaseRetriever`
+2. Implement the required `search` and `scrapeContent` methods
+3. Add your retriever to the `createRetriever` method in `ResearchSkill.js`
+4. Update the CLI and environment variable handling if needed
 
 ## Limitations
 
 This is a simplified implementation with the following limitations compared to the full Python version:
 
-- Uses basic web search approaches (SerpApi or Tavily)
+- Uses basic web search approaches (Tavily or Exa)
 - Single LLM provider (OpenAI only)
 - No document processing capabilities
 - No advanced features like deep research or multi-agent systems

@@ -1,10 +1,11 @@
 import { tavily } from '@tavily/core';
 import * as cheerio from 'cheerio';
 import { config } from '../utils/config.js';
+import BaseRetriever from './BaseRetriever.js';
 
-class TavilyRetriever {
+class TavilyRetriever extends BaseRetriever {
   constructor(apiKey) {
-    this.apiKey = apiKey || config.tavily?.apiKey || process.env.TAVILY_API_KEY;
+    super(apiKey || config.tavily?.apiKey || process.env.TAVILY_API_KEY);
     this.maxResults = config.maxResults || 5;
     
     if (this.apiKey) {
@@ -53,14 +54,7 @@ class TavilyRetriever {
   }
 
   async fallbackSearch(query) {
-    console.log(`TavilyRetriever: Using fallback search for "${query}"`);
-    
-    // Return a mock result for now
-    return [{
-      url: 'https://example.com',
-      title: `Search results for: ${query}`,
-      content: `This is a placeholder result for the query: "${query}". In a full implementation with Tavily, this would contain actual search results.`
-    }];
+    return super.fallbackSearch(query);
   }
 
   async scrapeContent(url) {

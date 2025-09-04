@@ -1,11 +1,10 @@
 import openai from '../utils/openai.js';
-import WebSearchRetriever from '../retrievers/WebSearchRetriever.js';
-import SerpApiRetriever from '../retrievers/SerpApiRetriever.js';
 import TavilyRetriever from '../retrievers/TavilyRetriever.js';
+import ExaRetriever from '../retrievers/ExaRetriever.js';
 import { config } from '../utils/config.js';
 
 class ResearchSkill {
-  constructor(retrieverType = 'tavily') {
+  constructor(retrieverType = process.env.RETRIEVER || 'tavily') {
     this.retrieverType = retrieverType;
     this.retriever = this.createRetriever(retrieverType);
     this.model = config.openai.model || 'gpt-oss-20b';
@@ -14,13 +13,11 @@ class ResearchSkill {
   createRetriever(type) {
     console.log('Creating retriever for type:', type);
     switch (type.toLowerCase()) {
-      case 'serpapi':
-        return new SerpApiRetriever(config.serpapi.apiKey);
+      case 'exa':
+        return new ExaRetriever(config.exa?.apiKey);
       case 'tavily':
-        return new TavilyRetriever(config.tavily.apiKey);
-      case 'web':
       default:
-        return new WebSearchRetriever();
+        return new TavilyRetriever(config.tavily?.apiKey);
     }
   }
 
@@ -139,7 +136,7 @@ ${context}`
           }
         ],
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: config.maxTokens
       });
 
       const answer = completion.choices[0].message.content;
