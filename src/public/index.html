@@ -61,10 +61,6 @@
                 <div id="researchForm" class="p-3 border-top">
                     <div class="input-group">
                         <input type="text" id="researchInput" class="form-control" placeholder="Enter your research question...">
-                        <select id="retrieverSelect" class="form-select" style="max-width: 150px;">
-                            <option value="tavily">Tavily</option>
-                            <option value="exa">Exa</option>
-                        </select>
                         <button id="sendResearchBtn" class="btn btn-primary" type="button">
                             <i class="fas fa-paper-plane"></i>
                         </button>
@@ -89,9 +85,9 @@
                     </div>
                 </div>
                 
-                <div class="flex-grow-1 overflow-hidden">
-                    <div class="container-fluid p-4 h-100">
-                        <div id="resultsContent" class="bg-white p-4 rounded shadow-sm overflow-auto h-100">
+                <div class="flex-grow-1 overflow-auto">
+                    <div class="container-fluid p-0 h-100">
+                        <div id="resultsContent" class="bg-white p-4 rounded-0 h-100">
                             <!-- Results will be populated here -->
                         </div>
                     </div>

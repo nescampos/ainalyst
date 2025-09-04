@@ -5,7 +5,6 @@ const socket = io();
 const chatMessages = document.getElementById('chatMessages');
 const researchInput = document.getElementById('researchInput');
 const sendResearchBtn = document.getElementById('sendResearchBtn');
-const retrieverSelect = document.getElementById('retrieverSelect');
 const chatInterface = document.getElementById('chatInterface');
 const resultsInterface = document.getElementById('resultsInterface');
 const resultsContent = document.getElementById('resultsContent');
@@ -83,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Send research request
 function sendResearch() {
     const query = researchInput.value.trim();
-    const retriever = retrieverSelect.value;
     
     if (!query) {
         showToast('Please enter a research question', 'error');
@@ -109,7 +107,7 @@ function sendResearch() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ query, retriever })
+        body: JSON.stringify({ query })
     })
     .then(response => response.json())
     .then(data => {

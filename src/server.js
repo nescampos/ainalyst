@@ -125,7 +125,7 @@ app.get('/api/download/markdown/:folderName', (req, res) => {
 
 app.post('/api/research', async (req, res) => {
   try {
-    const { query, retriever } = req.body;
+    const { query } = req.body;
     
     if (!query || query.trim().length === 0) {
       return res.status(400).json({ error: 'Research query is required' });
@@ -146,7 +146,7 @@ app.post('/api/research', async (req, res) => {
     io.emit('researchStarted', { jobId, query });
     
     // Start research in background
-    processResearch(jobId, query, retriever);
+    processResearch(jobId, query);
     
     res.json({ jobId });
   } catch (error) {
@@ -155,7 +155,7 @@ app.post('/api/research', async (req, res) => {
   }
 });
 
-async function processResearch(jobId, query, retriever) {
+async function processResearch(jobId, query) {
   try {
     // Update job status
     researchJobs.set(jobId, {
@@ -170,8 +170,7 @@ async function processResearch(jobId, query, retriever) {
     
     // Initialize skills
     io.emit('researchStatus', { jobId, status: 'initializing', message: '🔧 Initializing research tools...' });
-    const retrieverType = retriever || process.env.RETRIEVER || 'tavily';
-    const researcher = new ResearchSkill(retrieverType);
+    const researcher = new ResearchSkill();
     const reportGenerator = new ReportGenerator();
     const presentationGenerator = new PresentationGenerator();
     
