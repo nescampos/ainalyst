@@ -9,6 +9,7 @@ const chatInterface = document.getElementById('chatInterface');
 const resultsInterface = document.getElementById('resultsInterface');
 const resultsContent = document.getElementById('resultsContent');
 const resultsTitle = document.getElementById('resultsTitle');
+const presentationModeBtn = document.getElementById('presentationModeBtn');
 const downloadPptxBtn = document.getElementById('downloadPptxBtn');
 const downloadMarkdownBtn = document.getElementById('downloadMarkdownBtn');
 const backToChatBtn = document.getElementById('backToChatBtn');
@@ -18,6 +19,9 @@ const progressBar = document.getElementById('progressBar');
 const historyList = document.getElementById('historyList');
 const newResearchBtn = document.getElementById('newResearchBtn');
 const noHistoryMessage = document.getElementById('noHistoryMessage');
+const presentationContainer = document.getElementById('presentationContainer');
+const resultsContentContainer = document.getElementById('resultsContentContainer');
+const presentationFrame = document.getElementById('presentationFrame');
 
 // Toast container
 const toastContainer = document.createElement('div');
@@ -36,20 +40,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners
     sendResearchBtn.addEventListener('click', sendResearch);
     researchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !researchInput.disabled) {
             sendResearch();
         }
     });
     
     backToChatBtn.addEventListener('click', () => {
+        // Hide presentation if visible
+        if (!presentationContainer.classList.contains('d-none')) {
+            presentationContainer.classList.add('d-none');
+            resultsContentContainer.classList.remove('d-none');
+            return;
+        }
+        
         resultsInterface.classList.add('d-none');
         chatInterface.classList.remove('d-none');
+        // Ensure input is enabled when returning to chat
+        researchInput.disabled = false;
+        sendResearchBtn.disabled = false;
+        researchInput.placeholder = 'Enter your research question...';
     });
     
     newResearchBtn.addEventListener('click', () => {
+        // Hide presentation if visible
+        if (!presentationContainer.classList.contains('d-none')) {
+            presentationContainer.classList.add('d-none');
+            resultsContentContainer.classList.remove('d-none');
+            return;
+        }
+        
         resultsInterface.classList.add('d-none');
         chatInterface.classList.remove('d-none');
         researchInput.focus();
+        // Ensure input is enabled when starting new research
+        researchInput.disabled = false;
+        sendResearchBtn.disabled = false;
+        researchInput.placeholder = 'Enter your research question...';
+    });
+    
+    // Presentation mode button
+    presentationModeBtn.addEventListener('click', () => {
+        if (currentFolderName) {
+            // Show presentation in iframe
+            presentationFrame.src = `/presentation.html?folder=${currentFolderName}`;
+            resultsContentContainer.classList.add('d-none');
+            presentationContainer.classList.remove('d-none');
+        } else {
+            showToast('No research selected for presentation', 'error');
+        }
+    });
+    
+    // Listen for messages from iframe
+    window.addEventListener('message', (event) => {
+        if (event.data.action === 'closePresentation') {
+            presentationContainer.classList.add('d-none');
+            resultsContentContainer.classList.remove('d-none');
+        }
     });
     
     // Download button event listeners
@@ -91,6 +137,11 @@ function sendResearch() {
     // Add user message to chat
     addMessageToChat(query, 'sent');
     
+    // Disable input and button during research
+    researchInput.disabled = true;
+    sendResearchBtn.disabled = true;
+    researchInput.placeholder = 'Research in progress...';
+    
     // Clear input
     researchInput.value = '';
     
@@ -119,6 +170,10 @@ function sendResearch() {
     })
     .catch(error => {
         hideLoading();
+        // Re-enable input and button on error
+        researchInput.disabled = false;
+        sendResearchBtn.disabled = false;
+        researchInput.placeholder = 'Enter your research question...';
         addMessageToChat(`Error: ${error.message}`, 'received');
         showToast(`Error: ${error.message}`, 'error');
         console.error('Error:', error);
@@ -260,6 +315,10 @@ function loadResearchResult(folderName) {
             // Switch to results interface
             chatInterface.classList.add('d-none');
             resultsInterface.classList.remove('d-none');
+            
+            // Make sure we're showing results content, not presentation
+            presentationContainer.classList.add('d-none');
+            resultsContentContainer.classList.remove('d-none');
             
             // Set results title
             resultsTitle.textContent = folderName.replace(/_/g, ' ');
@@ -411,6 +470,11 @@ socket.on('researchCompleted', (data) => {
     researchProgress = 100;
     updateProgressBar();
     
+    // Re-enable input and button
+    researchInput.disabled = false;
+    sendResearchBtn.disabled = false;
+    researchInput.placeholder = 'Enter your research question...';
+    
     // Load the results after a short delay
     setTimeout(() => {
         loadResearchResult(data.folderName);
@@ -424,6 +488,12 @@ socket.on('researchFailed', (data) => {
     console.log('Research failed:', data);
     hideLoading();
     addStatusMessage(`❌ Research failed: ${data.error}`, 'failed');
+    
+    // Re-enable input and button on failure
+    researchInput.disabled = false;
+    sendResearchBtn.disabled = false;
+    researchInput.placeholder = 'Enter your research question...';
+    
     showToast(`Research failed: ${data.error}`, 'error');
 });
 

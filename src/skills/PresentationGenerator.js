@@ -112,7 +112,7 @@ class PresentationGenerator {
   }
 
   /**
-   * Divide el markdown en secciones basadas en títulos de nivel 2 (##)
+   * Divide el markdown en secciones basadas en separadores \"---\"
    * @param {string} markdown - El contenido markdown completo
    * @returns {Array} - Array de secciones
    */
@@ -120,8 +120,8 @@ class PresentationGenerator {
     // Remover el título principal (nivel 1) si existe
     const contentWithoutTitle = markdown.replace(/^#.*\n?/, '');
     
-    // Dividir por títulos de nivel 2
-    const sections = contentWithoutTitle.split(/(?=##\s)/g);
+    // Dividir por separadores de diapositivas \"---\"
+    const sections = contentWithoutTitle.split(/\n---\n/g);
     
     // Filtrar secciones vacías
     return sections.filter(section => section.trim() !== '');
@@ -135,7 +135,7 @@ class PresentationGenerator {
   parseSectionContent(section) {
     // Extraer el título (primer línea que empieza con ##)
     const titleMatch = section.match(/^##\s+(.*)/);
-    const title = titleMatch ? titleMatch[1].trim() : 'Sin título';
+    const title = titleMatch ? titleMatch[1].trim() : '';
     
     // Remover el título del contenido
     const contentWithoutTitle = section.replace(/^##.*\n?/, '').trim();
@@ -150,7 +150,7 @@ class PresentationGenerator {
   }
 
   /**
-   * Parsea elementos markdown como listas, tablas, énfasis, etc.
+   * Parsea elementos markdown como encabezados, listas, tablas, énfasis, etc.
    * @param {string} content - El contenido markdown
    * @returns {Array} - Array de elementos parseados
    */
@@ -165,6 +165,26 @@ class PresentationGenerator {
       
       // Saltar líneas vacías
       if (line.trim() === '') {
+        continue;
+      }
+      
+      // Detectar encabezados de nivel 2 (##)
+      if (line.match(/^##\s+(.*)/)) {
+        const title = line.replace(/^##\s+/, '').trim();
+        elements.push({
+          type: 'heading2',
+          content: title
+        });
+        continue;
+      }
+      
+      // Detectar encabezados de nivel 3 (###)
+      if (line.match(/^###\s+(.*)/)) {
+        const subtitle = line.replace(/^###\s+/, '').trim();
+        elements.push({
+          type: 'heading3',
+          content: subtitle
+        });
         continue;
       }
       
@@ -285,18 +305,20 @@ class PresentationGenerator {
    * @param {Object} content - Contenido parseado
    */
   async createSlidesFromContent(pptx, content) {
-    // Crear diapositiva para el título de la sección
-    const titleSlide = pptx.addSlide();
-    titleSlide.addText(content.title, {
-      x: 0.5,
-      y: 1,
-      w: 9,
-      h: 1.5,
-      fontSize: 24,
-      bold: true,
-      align: 'center',
-      color: '000000'
-    });
+    // Solo crear diapositiva de título si hay un título
+    if (content.title) {
+      const titleSlide = pptx.addSlide();
+      titleSlide.addText(content.title, {
+        x: 0.5,
+        y: 1,
+        w: 9,
+        h: 1.5,
+        fontSize: 24,
+        bold: true,
+        align: 'center',
+        color: '000000'
+      });
+    }
     
     // Crear diapositivas para el contenido
     let currentSlide = pptx.addSlide();
@@ -304,55 +326,118 @@ class PresentationGenerator {
     
     for (const element of content.elements) {
       // Verificar si necesitamos una nueva diapositiva
-      if (currentY > 6) {
+      if (currentY > 5.5) { // Ajustado para mejor ajuste de contenido
         currentSlide = pptx.addSlide();
         currentY = 0.5;
       }
       
       switch (element.type) {
+        case 'heading2':
+          // Agregar encabezado de nivel 2 (##)
+          const heading2Options = {
+            x: 0.5,
+            y: currentY,
+            w: 9,
+            h: 0.8,
+            fontSize: 18,
+            bold: true,
+            color: '000000'
+          };
+          
+          currentSlide.addText(element.content, heading2Options);
+          currentY += 0.8;
+          break;
+          
+        case 'heading3':
+          // Agregar encabezado de nivel 3 (###)
+          const heading3Options = {
+            x: 0.5,
+            y: currentY,
+            w: 9,
+            h: 0.7,
+            fontSize: 16,
+            bold: true,
+            color: '363636'
+          };
+          
+          currentSlide.addText(element.content, heading3Options);
+          currentY += 0.7;
+          break;
+          
         case 'text':
+          // Calcular altura del texto basado en su longitud
+          const textLength = element.content.length;
+          const textHeight = Math.min(0.8, Math.max(0.4, textLength / 100));
+          
           // Agregar texto normal o formateado
           const textOptions = {
             x: 0.5,
             y: currentY,
             w: 9,
-            h: 0.8,
+            h: textHeight,
             fontSize: 16,
-            color: '363636',
-            bold: element.formatted && element.content.match(/(\*\*|__)/) ? true : false,
-            italic: element.formatted && element.content.match(/(\*|_)/) && !element.content.match(/(\*\*|__)/) ? true : false
+            color: '363636'
           };
           
-          // Limpiar marcadores de énfasis para la presentación
-          const cleanText = element.content
-            .replace(/\*\*(.*?)\*\*/g, '$1')  // Negritas
-            .replace(/\*(.*?)\*/g, '$1')      // Cursivas
-            .replace(/__(.*?)__/g, '$1')      // Negritas
-            .replace(/_(.*?)_/g, '$1');       // Cursivas
+          // Procesar formato de texto (negritas y cursivas)
+          let cleanText = element.content;
+          let isBold = false;
+          let isItalic = false;
+          
+          // Verificar si el texto completo está en negritas
+          if (element.content.match(/^\*\*.*\*\*$/) || element.content.match(/^__.*__$/)) {
+            isBold = true;
+            cleanText = cleanText.replace(/^\*\*(.*)\*\*$/, '$1').replace(/^__(.*)__$/, '$1');
+          }
+          // Verificar si el texto completo está en cursivas
+          else if (element.content.match(/^\*.*\*$/) || element.content.match(/^_.*_$/)) {
+            isItalic = true;
+            cleanText = cleanText.replace(/^\*(.*)\*$/, '$1').replace(/^_(.*)_$/, '$1');
+          }
+          
+          textOptions.bold = isBold;
+          textOptions.italic = isItalic;
           
           currentSlide.addText(cleanText, textOptions);
-          currentY += 0.8;
+          currentY += textHeight + 0.1;
           break;
           
         case 'list':
           // Agregar lista
           for (const [index, item] of element.items.entries()) {
             // Verificar si necesitamos una nueva diapositiva
-            if (currentY > 6) {
+            if (currentY > 5.5) { // Ajustado para mejor ajuste de contenido
               currentSlide = pptx.addSlide();
               currentY = 0.5;
             }
             
-            currentSlide.addText(`• ${item}`, {
+            // Calcular altura del item basado en su longitud
+            const itemLength = item.length;
+            const itemHeight = Math.min(0.6, Math.max(0.3, itemLength / 80));
+            
+            // Procesar formato en items de lista
+            const formattedItem = item
+              .replace(/\*\*(.*?)\*\*/g, '$1')  // Negritas
+              .replace(/\*(.*?)\*/g, '$1')      // Cursivas
+              .replace(/__(.*?)__/g, '$1')      // Negritas
+              .replace(/_(.*?)_/g, '$1');       // Cursivas
+            
+            // Determinar si el texto debe estar en negrita o cursiva
+            const isBold = item.match(/(\*\*|__)/);
+            const isItalic = item.match(/(\*|_)/) && !item.match(/(\*\*|__)/);
+            
+            currentSlide.addText(`• ${formattedItem}`, {
               x: 1,
               y: currentY,
               w: 8.5,
-              h: 0.6,
+              h: itemHeight,
               fontSize: 15,
               color: '363636',
+              bold: isBold ? true : false,
+              italic: isItalic ? true : false,
               bullet: false // Usamos nuestro propio marcador de lista
             });
-            currentY += 0.6;
+            currentY += itemHeight + 0.1;
           }
           currentY += 0.2; // Espacio después de la lista
           break;
@@ -361,7 +446,7 @@ class PresentationGenerator {
           // Agregar tabla
           if (element.headers && element.rows) {
             // Verificar si necesitamos una nueva diapositiva
-            if (currentY > 5) {
+            if (currentY > 4.5) { // Ajustado para mejor ajuste de contenido
               currentSlide = pptx.addSlide();
               currentY = 0.5;
             }
@@ -369,17 +454,20 @@ class PresentationGenerator {
             // Crear datos de tabla para pptxgenjs
             const tableData = [element.headers, ...element.rows];
             
+            // Calcular altura de la tabla
+            const tableHeight = Math.min(3, 0.3 * (tableData.length + 1));
+            
             currentSlide.addTable(tableData, {
               x: 0.5,
               y: currentY,
               w: 9,
-              h: 0.5 * (tableData.length + 1),
+              h: tableHeight,
               fontSize: 12,
               color: '363636',
               fill: 'F0F0F0'
             });
             
-            currentY += 0.5 * (tableData.length + 1) + 0.3;
+            currentY += tableHeight + 0.3;
           }
           break;
       }

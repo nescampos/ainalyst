@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Research Presentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/monokai.min.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal ul, .reveal ol {
+            margin-bottom: 1rem;
+        }
+        .reveal li {
+            margin-bottom: 0.5rem;
+        }
+        .reveal table {
+            margin: 1rem auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
+        .reveal table, .reveal th, .reveal td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+        }
+        .reveal th {
+            background-color: #333;
+        }
+        .reveal pre {
+            width: 90%;
+            margin: 1rem auto;
+            font-size: 0.7em;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .back-button:hover {
+            background: rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Back to Results
+    </button>
+    
+    <div class="reveal">
+        <div class="slides" id="presentationContent">
+            <!-- Presentation content will be loaded here -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+    <script>
+        // Function to go back to results page
+        function goBack() {
+            window.parent.postMessage({action: 'closePresentation'}, '*');
+        }
+        
+        // Get folder name from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const folderName = urlParams.get('folder');
+        
+        if (folderName) {
+            // Load presentation content
+            fetch(`/api/results/${folderName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    // Convert markdown to slides using Reveal.js markdown format
+                    const slidesMarkdown = convertMarkdownToRevealFormat(data.reportContent);
+                    document.getElementById('presentationContent').innerHTML = slidesMarkdown;
+                    
+                    // Initialize Reveal.js
+                    Reveal.initialize({
+                        controls: true,
+                        progress: true,
+                        center: true,
+                        hash: true,
+                        transition: 'slide',
+                        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading presentation:', error);
+                    document.getElementById('presentationContent').innerHTML = 
+                        `<section><h2>Error loading presentation</h2><p>${error.message}</p></section>`;
+                });
+        }
+        
+        // Function to convert markdown to Reveal.js format
+        function convertMarkdownToRevealFormat(markdown) {
+            // Split markdown into sections by main headers (##)
+            const sections = markdown.split(/\n##\s/);
+            let slidesHtml = '';
+            
+            // First section is the title (before any ##)
+            if (sections.length > 0 && sections[0].trim()) {
+                const titleContent = sections[0].trim();
+                // Extract main title from first line that starts with #
+                const lines = titleContent.split('\n');
+                let mainTitle = '';
+                for (const line of lines) {
+                    const titleMatch = line.match(/^#\s(.*)/);
+                    if (titleMatch) {
+                        mainTitle = titleMatch[1];
+                        break;
+                    }
+                }
+                
+                if (mainTitle) {
+                    slidesHtml += `<section data-markdown><textarea data-template>\n# ${mainTitle}\n</textarea></section>\n`;
+                }
+            }
+            
+            // Process each section
+            for (let i = 1; i < sections.length; i++) {
+                const section = sections[i];
+                if (section.trim()) {
+                    // Split section into subsections by sub-headers (###)
+                    const subsections = section.split(/\n###\s/);
+                    
+                    if (subsections.length > 1) {
+                        // Create main slide with section title
+                        const sectionTitle = subsections[0].trim();
+                        slidesHtml += `<section data-markdown><textarea data-template>\n## ${sectionTitle}\n</textarea></section>\n`;
+                        
+                        // Create slides for each subsection
+                        for (let j = 1; j < subsections.length; j++) {
+                            const subsection = subsections[j].trim();
+                            if (subsection) {
+                                // Format subsection for markdown
+                                const formattedContent = `### ${subsection}`;
+                                slidesHtml += `<section data-markdown><textarea data-template>\n${formattedContent}\n</textarea></section>\n`;
+                            }
+                        }
+                    } else {
+                        // Single slide for the section
+                        const formattedContent = `## ${section.trim()}`;
+                        slidesHtml += `<section data-markdown><textarea data-template>\n${formattedContent}\n</textarea></section>\n`;
+                    }
+                }
+            }
+            
+            return slidesHtml;
+        }
+    </script>
+</body>
+</html>

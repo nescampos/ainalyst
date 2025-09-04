@@ -471,3 +471,15 @@ body {
         min-height: 100vh;
     }
 }
+
+/* Disabled input styles */
+#researchInput:disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+#sendResearchBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

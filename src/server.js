@@ -29,6 +29,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/presentation.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'presentation.html'));
+});
+
 app.get('/api/history', (req, res) => {
   try {
     const outputsDir = path.join(__dirname,"..", 'outputs');

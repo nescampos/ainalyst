@@ -30,6 +30,7 @@
     "markdown-it": "^14.1.0",
     "openai": "^4.20.0",
     "pptxgenjs": "^4.0.1",
+    "reveal.js": "^5.2.1",
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
