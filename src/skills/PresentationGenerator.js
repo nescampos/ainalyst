@@ -59,44 +59,56 @@ class PresentationGenerator {
     const pptx = new pptxgen();
     
     // Establecer diseños y estilos generales
-    pptx.author = 'Nestor Campos';
+    pptx.author = 'AInalyst';
     pptx.company = 'Techgethr';
-    
-    // Dividir el markdown en secciones por títulos de nivel 2 (##)
-    const sections = this.splitMarkdownIntoSections(markdown);
     
     // Crear diapositiva de título principal
     const titleSlide = pptx.addSlide();
-    titleSlide.addText(query, {
+    titleSlide.addText('Report Title', {
       x: 0.5,
-      y: 1,
+      y: 0.5,
       w: 9,
-      h: 1.5,
+      h: 0.8,
       fontSize: 28,
       bold: true,
       align: 'center',
       color: '000000'
     });
     
+    titleSlide.addText(query, {
+      x: 0.5,
+      y: 1.5,
+      w: 9,
+      h: 1.0,
+      fontSize: 20,
+      bold: false,
+      align: 'center',
+      color: '363636'
+    });
+    
     titleSlide.addText('Research Report', {
       x: 0.5,
-      y: 3,
+      y: 3.0,
       w: 9,
-      h: 1,
-      fontSize: 20,
+      h: 0.8,
+      fontSize: 18,
+      bold: false,
       align: 'center',
       color: '363636'
     });
     
     titleSlide.addText(new Date().toLocaleDateString(), {
       x: 0.5,
-      y: 5,
+      y: 4.5,
       w: 9,
       h: 0.5,
       fontSize: 14,
       align: 'center',
       color: '666666'
     });
+    
+    // Dividir el markdown en secciones por separadores "---"
+    const sections = this.splitMarkdownIntoSections(markdown);
     
     // Procesar cada sección
     for (const section of sections) {
@@ -375,7 +387,7 @@ class PresentationGenerator {
             y: currentY,
             w: 9,
             h: textHeight,
-            fontSize: 16,
+            fontSize: 14,
             color: '363636'
           };
           
@@ -384,12 +396,12 @@ class PresentationGenerator {
           let isBold = false;
           let isItalic = false;
           
-          // Verificar si el texto completo está en negritas
+          // Verificar si el texto completo está en negritas (**texto**)
           if (element.content.match(/^\*\*.*\*\*$/) || element.content.match(/^__.*__$/)) {
             isBold = true;
             cleanText = cleanText.replace(/^\*\*(.*)\*\*$/, '$1').replace(/^__(.*)__$/, '$1');
           }
-          // Verificar si el texto completo está en cursivas
+          // Verificar si el texto completo está en cursivas (*texto*)
           else if (element.content.match(/^\*.*\*$/) || element.content.match(/^_.*_$/)) {
             isItalic = true;
             cleanText = cleanText.replace(/^\*(.*)\*$/, '$1').replace(/^_(.*)_$/, '$1');
@@ -416,25 +428,30 @@ class PresentationGenerator {
             const itemHeight = Math.min(0.6, Math.max(0.3, itemLength / 80));
             
             // Procesar formato en items de lista
-            const formattedItem = item
-              .replace(/\*\*(.*?)\*\*/g, '$1')  // Negritas
-              .replace(/\*(.*?)\*/g, '$1')      // Cursivas
-              .replace(/__(.*?)__/g, '$1')      // Negritas
-              .replace(/_(.*?)_/g, '$1');       // Cursivas
+            let formattedItem = item;
+            let itemBold = false;
+            let itemItalic = false;
             
-            // Determinar si el texto debe estar en negrita o cursiva
-            const isBold = item.match(/(\*\*|__)/);
-            const isItalic = item.match(/(\*|_)/) && !item.match(/(\*\*|__)/);
+            // Verificar si el texto completo está en negritas (**texto**)
+            if (item.match(/^\*\*.*\*\*$/) || item.match(/^__.*__$/)) {
+              itemBold = true;
+              formattedItem = formattedItem.replace(/^\*\*(.*)\*\*$/, '$1').replace(/^__(.*)__$/, '$1');
+            }
+            // Verificar si el texto completo está en cursivas (*texto*)
+            else if (item.match(/^\*.*\*$/) || item.match(/^_.*_$/)) {
+              itemItalic = true;
+              formattedItem = formattedItem.replace(/^\*(.*)\*$/, '$1').replace(/^_(.*)_$/, '$1');
+            }
             
             currentSlide.addText(`• ${formattedItem}`, {
               x: 1,
               y: currentY,
               w: 8.5,
               h: itemHeight,
-              fontSize: 15,
+              fontSize: 14,
               color: '363636',
-              bold: isBold ? true : false,
-              italic: isItalic ? true : false,
+              bold: itemBold,
+              italic: itemItalic,
               bullet: false // Usamos nuestro propio marcador de lista
             });
             currentY += itemHeight + 0.1;
@@ -462,7 +479,7 @@ class PresentationGenerator {
               y: currentY,
               w: 9,
               h: tableHeight,
-              fontSize: 12,
+              fontSize: 10,
               color: '363636',
               fill: 'F0F0F0'
             });

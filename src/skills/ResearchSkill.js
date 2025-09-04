@@ -6,6 +6,7 @@ import { config } from '../utils/config.js';
 class ResearchSkill {
   constructor(retrieverType = process.env.RETRIEVER || 'tavily') {
     this.retrieverType = retrieverType;
+    console.log('Constructor - retrieverType:', retrieverType);
     this.retriever = this.createRetriever(retrieverType);
     this.model = config.openai.model || 'gpt-oss-20b';
   }
