@@ -1,4 +1,4 @@
-// Example of how to use the GPT Researcher programmatically
+// Example of how to use the GPT-OSS Researcher programmatically
 
 import conductResearch from './src/index.js';
 

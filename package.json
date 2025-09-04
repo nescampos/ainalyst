@@ -1,5 +1,5 @@
 {
-  "name": "gpt-oss-node",
+  "name": "gpt-oss-researcher",
   "version": "1.0.0",
   "description": "An AI research assistant using gpt-oss models",
   "main": "src/index.js",

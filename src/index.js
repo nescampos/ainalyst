@@ -5,7 +5,7 @@ import ReportGenerator from './skills/ReportGenerator.js';
 import PresentationGenerator from './skills/PresentationGenerator.js';
 
 async function conductResearch(query, options = {}) {
-  console.log('GPT Researcher - Node.js Version');
+  console.log('GPT-OSS Researcher');
   console.log('==================================\n');
   
   if (!query || query.trim().length === 0) {
