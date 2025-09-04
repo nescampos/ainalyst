@@ -2,6 +2,7 @@
 
 import ResearchSkill from './skills/ResearchSkill.js';
 import ReportGenerator from './skills/ReportGenerator.js';
+import PresentationGenerator from './skills/PresentationGenerator.js';
 
 async function conductResearch(query, options = {}) {
   console.log('GPT Researcher - Node.js Version');
@@ -18,6 +19,7 @@ async function conductResearch(query, options = {}) {
     // Initialize skills
     const researcher = new ResearchSkill(retrieverType);
     const reportGenerator = new ReportGenerator();
+    const presentationGenerator = new PresentationGenerator();
     
     // Conduct research
     console.log('🔍 Conducting research...');
@@ -40,10 +42,20 @@ async function conductResearch(query, options = {}) {
     
     // Save report to file
     console.log('\n💾 Saving report...');
-    const filepath = await reportGenerator.saveReport(report, query);
-    console.log(`\n✅ Report saved to: ${filepath}`);
+    const reportFilepath = await reportGenerator.saveReport(report, query);
+    console.log(`\n✅ Report saved to: ${reportFilepath}`);
     
-    return { researchResults, report, filepath };
+    // Generate presentation from markdown report
+    console.log('\n📊 Generating presentation...');
+    const presentationFilepath = await presentationGenerator.generatePresentationFromReport(query, report);
+    console.log(`\n✅ Presentation saved to: ${presentationFilepath}`);
+    
+    return { 
+      researchResults, 
+      report, 
+      reportFilepath,
+      presentationFilepath
+    };
   } catch (error) {
     console.error('Error during research:', error.message);
     throw error;
