@@ -36,9 +36,9 @@ async function conductResearch(query, options = {}) {
     const report = await reportGenerator.writeReport(query, researchResults);
     
     // Display report
-    console.log('\n📄 Research Report:');
-    console.log('==================');
-    console.log(report);
+    // console.log('\n📄 Research Report:');
+    // console.log('==================');
+    // console.log(report);
     
     // Save report to file
     console.log('\n💾 Saving report...');

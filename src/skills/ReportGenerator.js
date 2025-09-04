@@ -64,17 +64,26 @@ ${formattedResults}`;
     const fs = await import('fs');
     const path = await import('path');
     
-    // Create a filename from the query
-    const filename = query.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 50) + '.md';
-    const filepath = path.join('outputs', filename);
+    // Create a folder name from the query
+    const folderName = query.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 50);
+    const folderPath = path.join('outputs', folderName);
+    
+    // Create a filename
+    const filename = `${folderName}.md`;
+    const filepath = path.join(folderPath, filename);
     
     // Ensure outputs directory exists
     if (!fs.existsSync('outputs')) {
       fs.mkdirSync('outputs');
     }
     
+    // Ensure the investigation folder exists
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+    
     fs.writeFileSync(filepath, report);
-    console.log(`Report saved to: ${filepath}`);
+    //console.log(`Report saved to: ${filepath}`);
     return filepath;
   }
 }

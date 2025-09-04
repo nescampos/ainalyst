@@ -23,18 +23,27 @@ class PresentationGenerator {
    * @returns {string} - La ruta del archivo de presentación generado
    */
   async generatePresentationFromReport(query, report) {
-    console.log(`Generando presentación para: ${query}`);
+    //console.log(`Generando presentación para: ${query}`);
     
     try {
+      // Create a folder name from the query
+      const folderName = query.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 50);
+      const folderPath = path.join(this.outputDir, folderName);
+      
+      // Ensure the investigation folder exists
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
+      }
+      
       // Generar presentación en formato PowerPoint
       const pptFilename = this.generateFilename(query, 'pptx');
-      const pptFilepath = path.join(this.outputDir, pptFilename);
+      const pptFilepath = path.join(folderPath, pptFilename);
       
       await this.createPowerPointPresentationFromMarkdown(pptFilepath, query, report);
-      console.log(`Presentación guardada en: ${pptFilepath}`);
+      //console.log(`Presentación guardada en: ${pptFilepath}`);
       return pptFilepath;
     } catch (error) {
-      console.error('Error generando la presentación:', error.message);
+      //console.error('Error generando la presentación:', error.message);
       throw error;
     }
   }
@@ -50,7 +59,7 @@ class PresentationGenerator {
     const pptx = new pptxgen();
     
     // Establecer diseños y estilos generales
-    pptx.author = 'GPT Researcher';
+    pptx.author = 'Nestor Campos';
     pptx.company = 'Techgethr';
     
     // Dividir el markdown en secciones por títulos de nivel 2 (##)

@@ -6,7 +6,7 @@ import BaseRetriever from './BaseRetriever.js';
 class ExaRetriever extends BaseRetriever {
   constructor(apiKey) {
     super(apiKey || config.exa?.apiKey || process.env.EXA_API_KEY);
-    this.maxResults = config.maxResults || 5;
+    this.maxResults = config.maxResults || "5";
     
     if (this.apiKey) {
       this.client = new Exa(this.apiKey);
@@ -25,7 +25,7 @@ class ExaRetriever extends BaseRetriever {
       const response = await this.client.searchAndContents(query, {
         type: 'neural',
         useAutoprompt: true,
-        numResults: this.maxResults
+        numResults: parseInt(this.maxResults)
       });
 
       // Process results to match our expected format
