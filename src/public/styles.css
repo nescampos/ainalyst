@@ -1,0 +1,471 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+}
+
+#sidebar {
+    flex-shrink: 0;
+    overflow-y: auto;
+    height: 100vh;
+}
+
+#chatMessages {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.message {
+    max-width: 80%;
+}
+
+.message.sent {
+    align-self: flex-end;
+}
+
+.message.received {
+    align-self: flex-start;
+}
+
+.avatar {
+    flex-shrink: 0;
+}
+
+#historyList {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.history-item {
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 8px 12px;
+}
+
+.history-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.history-item.active {
+    background-color: rgba(52, 152, 219, 0.3);
+    border-left: 3px solid #3498db;
+}
+
+.history-item .title {
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.history-item .date {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.progress-container {
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.progress-message {
+    font-size: 0.9rem;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Results content styling */
+#resultsContent {
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 100%;
+}
+
+#resultsContent h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+#resultsContent h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #34495e;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+#resultsContent h3 {
+    font-size: 1.3rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: #555;
+}
+
+#resultsContent p {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#resultsContent ul, #resultsContent ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+#resultsContent li {
+    margin-bottom: 0.5rem;
+}
+
+#resultsContent table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#resultsContent table, #resultsContent th, #resultsContent td {
+    border: 1px solid #ddd;
+}
+
+#resultsContent th, #resultsContent td {
+    padding: 0.75rem;
+    text-align: left;
+}
+
+#resultsContent th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+#resultsContent tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+#resultsContent tr:hover {
+    background-color: #e9ecef;
+}
+
+#resultsContent pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    border: 1px solid #eee;
+}
+
+#resultsContent code {
+    font-family: 'Courier New', monospace;
+    background-color: #f1f1f1;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+#resultsContent a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+#resultsContent a:hover {
+    text-decoration: underline;
+}
+
+/* Action buttons styling */
+.action-buttons {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.action-buttons .btn {
+    margin-right: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+
+/* Research item styling */
+.research-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.research-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.research-item h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.research-item .meta {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.research-item .excerpt {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Loading spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Alert messages */
+.alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.toast {
+    background: white;
+    border-left: 4px solid #3498db;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    max-width: 350px;
+    animation: slideIn 0.3s ease;
+}
+
+.toast.success {
+    border-left-color: #28a745;
+}
+
+.toast.error {
+    border-left-color: #dc3545;
+}
+
+.toast.info {
+    border-left-color: #17a2b8;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Progress bar */
+.progress-bar-container {
+    height: 4px;
+    background-color: #ecf0f1;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #3498db;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Research status indicator */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-indicator.initializing {
+    background-color: #f39c12;
+}
+
+.status-indicator.planning {
+    background-color: #9b59b6;
+}
+
+.status-indicator.researching {
+    background-color: #3498db;
+}
+
+.status-indicator.generating {
+    background-color: #2ecc71;
+}
+
+.status-indicator.saving {
+    background-color: #e74c3c;
+}
+
+.status-indicator.presenting {
+    background-color: #e67e22;
+}
+
+.status-indicator.completed {
+    background-color: #27ae60;
+}
+
+.status-indicator.failed {
+    background-color: #c0392b;
+}
+
+/* Status message styling */
+.status-message {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    font-size: 0.9rem;
+}
+
+/* Research process indicator */
+.research-process {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.research-process h6 {
+    margin: 0 0 5px 0;
+    color: #0d47a1;
+}
+
+.research-process p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #sidebar {
+        width: 250px !important;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+    
+    #resultsContent {
+        padding: 10px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        margin-bottom: 10px;
+        margin-right: 0;
+        width: 100%;
+    }
+    
+    .history-item {
+        padding: 6px 10px;
+    }
+    
+    .toast-container {
+        right: 10px;
+    }
+    
+    .toast {
+        max-width: 300px;
+    }
+    
+    body {
+        height: auto;
+        min-height: 100vh;
+    }
+}

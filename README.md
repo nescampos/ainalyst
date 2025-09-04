@@ -8,6 +8,7 @@ A simplified Node.js implementation of the GPT Researcher, a tool that conducts 
 - Generates comprehensive reports with citations
 - Uses OpenAI GPT models for intelligent research
 - CLI interface for easy interaction
+- Web interface with ChatGPT-like experience
 - Saves reports to markdown files
 - Supports multiple search providers (Tavily, Exa)
 
@@ -63,6 +64,15 @@ Or:
 node src/index.js "Your research query here"
 ```
 
+### Web Interface Mode
+
+Run the web server:
+```bash
+npm run web
+```
+
+Then open your browser to http://localhost:3000
+
 ### Examples
 
 ```bash
@@ -106,6 +116,11 @@ Available retrievers:
 src/
 ├── index.js          # Main entry point
 ├── cli.js            # CLI interface
+├── server.js         # Web server
+├── public/           # Web interface files
+│   ├── index.html    # Main HTML file
+│   ├── styles.css    # Styles
+│   └── script.js     # Client-side JavaScript
 ├── retrievers/       # Web search functionality
 │   ├── BaseRetriever.js     # Base retriever class
 │   ├── TavilyRetriever.js   # Tavily search provider
@@ -122,6 +137,17 @@ The application is designed to be easily extensible with new retrievers:
 2. Implement the required `search` and `scrapeContent` methods
 3. Add your retriever to the `createRetriever` method in `ResearchSkill.js`
 4. Update the CLI and environment variable handling if needed
+
+## Web Interface Features
+
+The web interface provides a ChatGPT-like experience with the following features:
+
+1. **Chat-based Interaction**: Enter your research questions in a conversational interface
+2. **Real-time Progress Updates**: See the status of your research as it progresses
+3. **Research History**: Access previous research investigations from the sidebar
+4. **Results Display**: View formatted research reports in the browser
+5. **Downloadable Presentations**: Download PowerPoint presentations of your research
+6. **Responsive Design**: Works on desktop and mobile devices
 
 ## Limitations
 
