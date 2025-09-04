@@ -50,6 +50,53 @@
         .back-button:hover {
             background: rgba(0,0,0,0.8);
         }
+        
+        /* Ajustes para mejor visualización del contenido */
+        .reveal .slides section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .reveal .slides section .markdown-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        /* Mejorar el tamaño de texto para mejor legibilidad */
+        .reveal {
+            font-size: 80%;
+        }
+        
+        .reveal h1 {
+            font-size: 2.5em;
+        }
+        
+        .reveal h2 {
+            font-size: 1.8em;
+        }
+        
+        .reveal h3 {
+            font-size: 1.4em;
+        }
+        
+        .reveal p, .reveal li {
+            font-size: 1.2em;
+            line-height: 1.4;
+        }
+        
+        /* Mejorar el contraste de los enlaces */
+        .reveal a {
+            color: #42affa;
+            text-decoration: underline;
+        }
+        
+        .reveal a:hover {
+            color: #7bd0ff;
+        }
     </style>
 </head>
 <body>
@@ -94,9 +141,14 @@
                     Reveal.initialize({
                         controls: true,
                         progress: true,
-                        center: true,
+                        center: false,
                         hash: true,
                         transition: 'slide',
+                        width: '100%',
+                        height: '100%',
+                        margin: 0.1,
+                        minScale: 0.2,
+                        maxScale: 2.0,
                         plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
                     });
                 })
@@ -109,54 +161,20 @@
         
         // Function to convert markdown to Reveal.js format
         function convertMarkdownToRevealFormat(markdown) {
-            // Split markdown into sections by main headers (##)
-            const sections = markdown.split(/\n##\s/);
+            // Split markdown into sections by slide separators (---)
+            const slides = markdown.split(/\n---\n/);
             let slidesHtml = '';
             
-            // First section is the title (before any ##)
-            if (sections.length > 0 && sections[0].trim()) {
-                const titleContent = sections[0].trim();
-                // Extract main title from first line that starts with #
-                const lines = titleContent.split('\n');
-                let mainTitle = '';
-                for (const line of lines) {
-                    const titleMatch = line.match(/^#\s(.*)/);
-                    if (titleMatch) {
-                        mainTitle = titleMatch[1];
-                        break;
-                    }
-                }
-                
-                if (mainTitle) {
-                    slidesHtml += `<section data-markdown><textarea data-template>\n# ${mainTitle}\n</textarea></section>\n`;
-                }
-            }
-            
-            // Process each section
-            for (let i = 1; i < sections.length; i++) {
-                const section = sections[i];
-                if (section.trim()) {
-                    // Split section into subsections by sub-headers (###)
-                    const subsections = section.split(/\n###\s/);
-                    
-                    if (subsections.length > 1) {
-                        // Create main slide with section title
-                        const sectionTitle = subsections[0].trim();
-                        slidesHtml += `<section data-markdown><textarea data-template>\n## ${sectionTitle}\n</textarea></section>\n`;
-                        
-                        // Create slides for each subsection
-                        for (let j = 1; j < subsections.length; j++) {
-                            const subsection = subsections[j].trim();
-                            if (subsection) {
-                                // Format subsection for markdown
-                                const formattedContent = `### ${subsection}`;
-                                slidesHtml += `<section data-markdown><textarea data-template>\n${formattedContent}\n</textarea></section>\n`;
-                            }
-                        }
+            // Process each slide
+            for (let i = 0; i < slides.length; i++) {
+                const slideContent = slides[i].trim();
+                if (slideContent) {
+                    // Check if this is the title slide (first slide with # header)
+                    if (i === 0 && slideContent.match(/^#\s/)) {
+                        slidesHtml += `<section data-markdown><textarea data-template>\n${slideContent}\n</textarea></section>\n`;
                     } else {
-                        // Single slide for the section
-                        const formattedContent = `## ${section.trim()}`;
-                        slidesHtml += `<section data-markdown><textarea data-template>\n${formattedContent}\n</textarea></section>\n`;
+                        // For other slides, wrap content appropriately
+                        slidesHtml += `<section data-markdown><textarea data-template>\n${slideContent}\n</textarea></section>\n`;
                     }
                 }
             }

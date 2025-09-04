@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden;
+    overflow: auto;
     height: 100vh;
 }
 
@@ -103,9 +103,14 @@ body {
     line-height: 1.6;
     max-width: 900px;
     margin: 0 auto;
-    overflow-y: visible;
+    overflow-y: auto;
     min-height: 100%;
     padding: 20px;
+}
+
+#resultsContentContainer {
+    overflow-y: auto;
+    flex: 1;
 }
 
 #resultsContent h1 {
