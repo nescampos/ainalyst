@@ -2,6 +2,10 @@ import openai from '../utils/openai.js';
 import { config } from '../utils/config.js';
 
 class ReportGenerator {
+  constructor() {
+    this.model = config.openai.model || 'gpt-oss-20b';
+  }
+
   async writeReport(query, researchResults) {
     console.log(`Writing report for: ${query}`);
     
@@ -24,7 +28,7 @@ ${result.sources.map(s => `- [${s.title}](${s.url})`).join(`
 `);
 
       const completion = await openai.chat.completions.create({
-        model: config.openai.model,
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -39,7 +43,7 @@ ${formattedResults}`
           }
         ],
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: config.maxTokens
       });
 
       return completion.choices[0].message.content;

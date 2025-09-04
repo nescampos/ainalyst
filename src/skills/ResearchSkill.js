@@ -1,10 +1,27 @@
 import openai from '../utils/openai.js';
 import WebSearchRetriever from '../retrievers/WebSearchRetriever.js';
+import SerpApiRetriever from '../retrievers/SerpApiRetriever.js';
+import TavilyRetriever from '../retrievers/TavilyRetriever.js';
 import { config } from '../utils/config.js';
 
 class ResearchSkill {
-  constructor() {
-    this.retriever = new WebSearchRetriever();
+  constructor(retrieverType = 'tavily') {
+    this.retrieverType = retrieverType;
+    this.retriever = this.createRetriever(retrieverType);
+    this.model = config.openai.model || 'gpt-oss-20b';
+  }
+
+  createRetriever(type) {
+    console.log('Creating retriever for type:', type);
+    switch (type.toLowerCase()) {
+      case 'serpapi':
+        return new SerpApiRetriever(config.serpapi.apiKey);
+      case 'tavily':
+        return new TavilyRetriever(config.tavily.apiKey);
+      case 'web':
+      default:
+        return new WebSearchRetriever();
+    }
   }
 
   async planResearch(query) {
@@ -12,7 +29,7 @@ class ResearchSkill {
     
     try {
       const completion = await openai.chat.completions.create({
-        model: config.openai.model,
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -100,10 +117,12 @@ class ResearchSkill {
       const context = detailedResults.map(r => 
         `Source: ${r.title}
 Content: ${r.detailedContent || r.content}`
-      ).join('\n\n');
+      ).join(`
+
+`);
 
       const completion = await openai.chat.completions.create({
-        model: config.openai.model,
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -144,7 +163,7 @@ ${context}`
   }
 
   async conductResearch(query) {
-    console.log(`Starting research for: ${query}`);
+    console.log(`Starting research for: ${query} using ${this.retrieverType} retriever`);
     
     // Plan the research
     const subQuestions = await this.planResearch(query);

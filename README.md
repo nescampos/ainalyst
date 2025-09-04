@@ -9,6 +9,15 @@ A simplified Node.js implementation of the GPT Researcher, a tool that conducts 
 - Uses OpenAI GPT models for intelligent research
 - CLI interface for easy interaction
 - Saves reports to markdown files
+- Supports multiple search providers (SerpApi, Tavily)
+
+## Features
+
+- Conducts research on any given topic
+- Generates comprehensive reports with citations
+- Uses OpenAI GPT models for intelligent research
+- CLI interface for easy interaction
+- Saves reports to markdown files
 
 ## Prerequisites
 
@@ -28,11 +37,15 @@ A simplified Node.js implementation of the GPT Researcher, a tool that conducts 
    npm install
    ```
 
-3. Set up your OpenAI API key:
+3. Set up your API keys:
    - Copy the `.env.example` file to `.env`
-   - Add your OpenAI API key to the `.env` file:
-     ```
+   - Add your API keys to the `.env` file:
+     ```env
      OPENAI_API_KEY=sk-your-openai-api-key-here
+     # For SerpApi (optional)
+     SERPAPI_API_KEY=your-serpapi-key-here
+     # For Tavily (optional)
+     TAVILY_API_KEY=tvly-your-tavily-api-key-here
      ```
 
 ## Usage
@@ -82,6 +95,9 @@ src/
 ├── index.js          # Main entry point
 ├── cli.js            # CLI interface
 ├── retrievers/       # Web search functionality
+│   ├── SerpApiRetriever.js  # SerpApi search provider
+│   ├── TavilyRetriever.js   # Tavily search provider
+│   └── WebSearchRetriever.js # Base web search functionality
 ├── skills/           # Research and report generation skills
 └── utils/            # Utility functions and configuration
 ```
@@ -90,7 +106,7 @@ src/
 
 This is a simplified implementation with the following limitations compared to the full Python version:
 
-- Uses a basic web search approach (DuckDuckGo API)
+- Uses basic web search approaches (SerpApi or Tavily)
 - Single LLM provider (OpenAI only)
 - No document processing capabilities
 - No advanced features like deep research or multi-agent systems

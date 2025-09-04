@@ -1,9 +1,14 @@
 import OpenAI from 'openai';
 import { config } from './config.js';
 
-const openai = new OpenAI({
+const openaiConfig = {
   apiKey: config.openai.apiKey,
-  baseURL: config.openai.baseUrl
-});
+};
+
+if (config.openai.baseUrl) {
+  openaiConfig.baseURL = config.openai.baseUrl;
+}
+
+const openai = new OpenAI(openaiConfig);
 
 export default openai;

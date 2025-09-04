@@ -15,9 +15,30 @@ console.log('==================================\n');
 // If query provided as argument, use it directly
 const args = process.argv.slice(2);
 if (args.length > 0) {
-  const query = args.join(' ');
+  // Check if --retriever flag is provided
+  let retriever = 'web';
+  let queryArgs = args;
+  
+  const retrieverIndex = args.indexOf('--retriever');
+  if (retrieverIndex !== -1 && args.length > retrieverIndex + 1) {
+    retriever = args[retrieverIndex + 1];
+    // Remove the --retriever flag and its value from the args
+    queryArgs = args.filter((_, index) => 
+      index !== retrieverIndex && index !== retrieverIndex + 1
+    );
+  }
+  
+  const query = queryArgs.join(' ');
+  
+  if (!query || query.trim().length === 0) {
+    console.log('Please provide a research query.');
+    rl.close();
+    process.exit(1);
+    return;
+  }
+  
   try {
-    await conductResearch(query);
+    await conductResearch(query, { retriever });
   } catch (error) {
     console.error('Error during research:', error.message);
     process.exit(1);
@@ -26,21 +47,26 @@ if (args.length > 0) {
   }
 } else {
   // Otherwise, prompt user for input
-  rl.question('Enter your research query: ', async (query) => {
-    if (!query || query.trim().length === 0) {
-      console.log('Please provide a research query.');
-      rl.close();
-      process.exit(1);
-      return;
-    }
+  console.log('Available retrievers: web, serpapi');
+  rl.question('Select retriever (default: web): ', (retrieverInput) => {
+    const retriever = retrieverInput && retrieverInput.trim() !== '' ? retrieverInput.trim() : 'web';
     
-    try {
-      await conductResearch(query);
-    } catch (error) {
-      console.error('Error during research:', error.message);
-      process.exit(1);
-    } finally {
-      rl.close();
-    }
+    rl.question('Enter your research query: ', async (query) => {
+      if (!query || query.trim().length === 0) {
+        console.log('Please provide a research query.');
+        rl.close();
+        process.exit(1);
+        return;
+      }
+      
+      try {
+        await conductResearch(query, { retriever });
+      } catch (error) {
+        console.error('Error during research:', error.message);
+        process.exit(1);
+      } finally {
+        rl.close();
+      }
+    });
   });
 }

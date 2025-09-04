@@ -19,10 +19,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@tavily/core": "^0.5.11",
     "axios": "^1.6.0",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
-    "openai": "^4.20.0"
+    "openai": "^4.20.0",
+    "serpapi": "^2.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
