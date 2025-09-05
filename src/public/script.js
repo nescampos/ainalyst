@@ -536,12 +536,9 @@ function shareResearch(folderName) {
     // The folderName already has underscores instead of spaces, which is correct for URLs
     const shareUrl = `${window.location.origin}/shared/${folderName}`;
     
-    // Show share notification first
-    showToast('Research shared successfully!', 'success');
-    
     // Copy to clipboard
     navigator.clipboard.writeText(shareUrl).then(() => {
-        showToast('Share link copied to clipboard!', 'success');
+        showToast('Research shared successfully! Link copied to clipboard.', 'success');
     }).catch(err => {
         console.error('Failed to copy: ', err);
         // Show the URL in a toast if copying fails

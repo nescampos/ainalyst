@@ -97,12 +97,30 @@
         .reveal a:hover {
             color: #7bd0ff;
         }
+        
+        /* Fullscreen hint */
+        .fullscreen-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
     <button class="back-button" onclick="goBack()">
         <i class="fas fa-arrow-left"></i> Back to Results
     </button>
+    
+    <div class="fullscreen-hint">
+        Press 'F' for fullscreen mode
+    </div>
     
     <div class="reveal">
         <div class="slides" id="presentationContent">

@@ -113,8 +113,8 @@ app.get('/shared/:folderName', (req, res) => {
       return res.status(404).send('Report not found');
     }
     
-    // Serve the shared research presentation view
-    res.sendFile(path.join(__dirname, 'public', 'shared-presentation.html'));
+    // Serve the shared research view
+    res.sendFile(path.join(__dirname, 'public', 'shared-research.html'));
   } catch (error) {
     console.error('Error accessing shared research:', error);
     res.status(500).send('Failed to access shared research');

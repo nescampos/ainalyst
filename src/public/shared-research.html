@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shared Research</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header */
+        .shared-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .shared-header .title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .shared-header .info {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        /* View toggle buttons */
+        .view-toggle {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .view-toggle button {
+            border: none;
+            background: transparent;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .view-toggle button.active {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        /* Main content area */
+        .main-content {
+            margin-top: 120px;
+            padding: 20px;
+            height: calc(100vh - 120px);
+            overflow: auto;
+        }
+        
+        /* Detail view */
+        #detailView {
+            display: block;
+            height: 100%;
+        }
+        
+        #detailContent {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Presentation view */
+        #presentationView {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #presentationFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Markdown styling */
+        #detailContent h1 {
+            font-size: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        #detailContent h2 {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        #detailContent h3 {
+            font-size: 1.25rem;
+            margin-top: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        #detailContent p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        #detailContent ul, #detailContent ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+        
+        #detailContent li {
+            margin-bottom: 0.5rem;
+        }
+        
+        #detailContent a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        
+        #detailContent a:hover {
+            text-decoration: underline;
+        }
+        
+        #detailContent pre {
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        #detailContent code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.875em;
+        }
+        
+        #detailContent table {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        
+        #detailContent table th,
+        #detailContent table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border: 1px solid #dee2e6;
+        }
+        
+        #detailContent table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #0d6efd;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error message */
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #dc3545;
+        }
+        
+        /* Fullscreen hint */
+        .fullscreen-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0.8;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="shared-header">
+        <div class="title" id="researchTitle">Shared Research</div>
+        <div class="info">Read-only view - Download disabled</div>
+    </div>
+    
+    <div class="view-toggle">
+        <button id="detailViewBtn" class="active">
+            <i class="fas fa-file-alt"></i> Detail View
+        </button>
+        <button id="presentationViewBtn">
+            <i class="fas fa-presentation"></i> Presentation View
+        </button>
+    </div>
+    
+    <div class="fullscreen-hint" id="fullscreenHint">
+        Press 'F' for fullscreen mode
+    </div>
+    
+    <div class="main-content">
+        <div id="detailView">
+            <div id="detailContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading research content...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="presentationView">
+            <iframe id="presentationFrame" src="" class="w-100 h-100 border-0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Get folder name from URL path
+        const pathParts = window.location.pathname.split('/');
+        const folderName = pathParts[pathParts.length - 1];
+        
+        // DOM elements
+        const researchTitle = document.getElementById('researchTitle');
+        const detailContent = document.getElementById('detailContent');
+        const presentationView = document.getElementById('presentationView');
+        const detailView = document.getElementById('detailView');
+        const detailViewBtn = document.getElementById('detailViewBtn');
+        const presentationViewBtn = document.getElementById('presentationViewBtn');
+        const presentationFrame = document.getElementById('presentationFrame');
+        const fullscreenHint = document.getElementById('fullscreenHint');
+        
+        // View toggle functionality
+        detailViewBtn.addEventListener('click', () => {
+            detailView.style.display = 'block';
+            presentationView.style.display = 'none';
+            detailViewBtn.classList.add('active');
+            presentationViewBtn.classList.remove('active');
+            fullscreenHint.style.display = 'none';
+        });
+        
+        presentationViewBtn.addEventListener('click', () => {
+            // Set the presentation iframe source
+            presentationFrame.src = `/presentation.html?folder=${folderName}`;
+            detailView.style.display = 'none';
+            presentationView.style.display = 'block';
+            presentationViewBtn.classList.add('active');
+            detailViewBtn.classList.remove('active');
+            fullscreenHint.style.display = 'block';
+        });
+        
+        if (folderName) {
+            // Update research title
+            researchTitle.textContent = folderName.replace(/_/g, ' ');
+            
+            // Load research content for detail view
+            fetch(`/api/results/${folderName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    // Render detail view
+                    detailContent.innerHTML = renderMarkdown(data.reportContent);
+                })
+                .catch(error => {
+                    console.error('Error loading research:', error);
+                    detailContent.innerHTML = `
+                        <div class="error">
+                            <h3>Error Loading Research</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Function to convert markdown to HTML for detail view
+        function renderMarkdown(markdown) {
+            // Convert headers
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
+                .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
+                .replace(/^###### (.*$)/gm, '<h6>$1</h6>');
+            
+            // Convert bold and italic
+            html = html
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                .replace(/_(.*?)_/g, '<em>$1</em>');
+            
+            // Convert lists
+            html = html
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>')
+                .replace(/<\/ul>\s*<ul>/g, '');
+            
+            // Convert numbered lists
+            html = html
+                .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/g, '<ol>$1</ol>')
+                .replace(/<\/ol>\s*<ol>/g, '');
+            
+            // Convert links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Convert code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Convert inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Convert paragraphs
+            html = html.replace(/^\s*(.+?)\s*$/gm, '<p>$1</p>');
+            
+            // Handle line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Clean up extra breaks
+            html = html.replace(/<br>\s*<br>/g, '</p><p>');
+            
+            return html;
+        }
+        
+        // Disable right-click context menu to prevent downloading
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Disable common keyboard shortcuts for downloading
+        document.addEventListener('keydown', event => {
+            // Disable F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S
+            if (event.keyCode === 123 || 
+                (event.ctrlKey && event.shiftKey && event.keyCode === 73) ||
+                (event.ctrlKey && event.keyCode === 85) ||
+                (event.ctrlKey && event.keyCode === 83)) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
