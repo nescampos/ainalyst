@@ -9,6 +9,7 @@ const chatInterface = document.getElementById('chatInterface');
 const resultsInterface = document.getElementById('resultsInterface');
 const resultsContent = document.getElementById('resultsContent');
 const resultsTitle = document.getElementById('resultsTitle');
+const shareBtn = document.getElementById('shareBtn');
 const presentationModeBtn = document.getElementById('presentationModeBtn');
 const downloadPptxBtn = document.getElementById('downloadPptxBtn');
 const downloadMarkdownBtn = document.getElementById('downloadMarkdownBtn');
@@ -76,6 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
         researchInput.disabled = false;
         sendResearchBtn.disabled = false;
         researchInput.placeholder = 'Enter your research question...';
+    });
+    
+    // Share button
+    shareBtn.addEventListener('click', () => {
+        if (currentFolderName) {
+            shareResearch(currentFolderName);
+        } else {
+            showToast('No research selected to share', 'error');
+        }
     });
     
     // Presentation mode button
@@ -518,4 +528,23 @@ function addStatusMessage(content, statusClass) {
     
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Share research function
+function shareResearch(folderName) {
+    // Create the shareable URL
+    // The folderName already has underscores instead of spaces, which is correct for URLs
+    const shareUrl = `${window.location.origin}/shared/${folderName}`;
+    
+    // Show share notification first
+    showToast('Research shared successfully!', 'success');
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        showToast('Share link copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        // Show the URL in a toast if copying fails
+        showToast(`Share this link: ${shareUrl}`, 'info');
+    });
 }

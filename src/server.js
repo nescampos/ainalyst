@@ -95,6 +95,32 @@ app.get('/api/results/:folderName', (req, res) => {
   }
 });
 
+// Public shared research view
+app.get('/shared/:folderName', (req, res) => {
+  try {
+    const { folderName } = req.params;
+    const folderPath = path.join(__dirname,"..", 'outputs', folderName);
+    
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).send('Research not found');
+    }
+    
+    // Find markdown file
+    const files = fs.readdirSync(folderPath);
+    const markdownFile = files.find(file => file.endsWith('.md'));
+    
+    if (!markdownFile) {
+      return res.status(404).send('Report not found');
+    }
+    
+    // Serve the shared research presentation view
+    res.sendFile(path.join(__dirname, 'public', 'shared-presentation.html'));
+  } catch (error) {
+    console.error('Error accessing shared research:', error);
+    res.status(500).send('Failed to access shared research');
+  }
+});
+
 app.get('/api/download/markdown/:folderName', (req, res) => {
   try {
     const { folderName } = req.params;
